@@ -37,42 +37,9 @@ Exibição das movimentações registradas e saldo atual.
 - Menus Interativos
 Interfaces distintas para usuários autenticados e não autenticados.
 
-## 📊 Diagrama de Fluxo (Flowchart)
+## 📊 Diagrama de Fluxo 
 
-flowchart TD
-
-A[Início do Programa] --> B{Sessão ativa?}
-
-B -- Não --> C[Mostrar Menu Inicial]
-C --> D{Opção escolhida?}
-
-D -- Criar Usuário --> CU[Criar Usuário]
-CU --> B
-
-D -- Abrir Conta --> CC[Criar Conta Corrente]
-CC --> B
-
-D -- Entrar --> L[Validar CPF e Conta]
-L -->|Credenciais Válidas| B
-L -->|Inválido| C
-
-D -- Sair --> Z[Fim]
-
-B -- Sim --> E[Mostrar Menu Logado]
-
-E --> F{Opção escolhida?}
-
-F -- Depositar --> DEP[Realizar Depósito]
-DEP --> E
-
-F -- Sacar --> SAQ[Realizar Saque]
-SAQ --> E
-
-F -- Extrato --> EXT[Exibir Extrato]
-EXT --> E
-
-F -- Logout --> OUT[Encerrar Sessão]
-OUT --> B
+[![](https://mermaid.ink/img/pako:eNp1k89um0AQxl9ltWfH8n8cDq0cwJIlu3FLHFUBHzYwtleCXXdZUie2Hybqoaec8gi8WGeBUsVSb_B98_uYmV2ONJIxUJtuEvkz2jGlyZ0bilBMgpko3iIuSSzJUsmtYilbk6urT-Tm6EOWFb8kYZo_sc9nU3-DFvliRFPiBAuZacUUWYDIyUzwiLNkHQqntN3j7b74bYohi2Sy43Gd4poUR3EEV1levCpe562Cj6qJWlXdNNzkUXFFHCk0qyCnhirJkUqB0GBQ5wL1RNmsEefBPUuwIcSWUwIVjMzcuCdHQQwCh-EZuS9eTWF2MkGVPRNPpShPxGnCfcar6IdgytN1sy2fp6XsfVzWXG5ZLMsyr_Sn_9vW1KS4sJcZ13X3rrcMvgEO8IICWsU7eiYMjepjDeizqIb8ydd_kM9-5GZHKF4A3gGb1NWBeN_vAu_AH3GyWkYExQsEZ5G5LsXbFRIiAmUGrS8QMihXZ0FbdKt4TG2tcmjRFFTKzCs9hoKQkOodpBBSGx9j2LA80SENxRmxPRMPUqZ_SSXz7Y7aG5Zk-JbvY6bB5cxc4KYERAzKkbnQ1B50x2UGtY_0QO1xvz3uD7qW1bF64-trq0Wfqd0ftTuj3mA4tAa97mDY7Y3OLfpSfrTTHlvDFoUY96wW1c9U_lPnP46sGoE?type=png)](https://mermaid.live/edit#pako:eNp1k89um0AQxl9ltWfH8n8cDq0cwJIlu3FLHFUBHzYwtleCXXdZUie2Hybqoaec8gi8WGeBUsVSb_B98_uYmV2ONJIxUJtuEvkz2jGlyZ0bilBMgpko3iIuSSzJUsmtYilbk6urT-Tm6EOWFb8kYZo_sc9nU3-DFvliRFPiBAuZacUUWYDIyUzwiLNkHQqntN3j7b74bYohi2Sy43Gd4poUR3EEV1levCpe562Cj6qJWlXdNNzkUXFFHCk0qyCnhirJkUqB0GBQ5wL1RNmsEefBPUuwIcSWUwIVjMzcuCdHQQwCh-EZuS9eTWF2MkGVPRNPpShPxGnCfcar6IdgytN1sy2fp6XsfVzWXG5ZLMsyr_Sn_9vW1KS4sJcZ13X3rrcMvgEO8IICWsU7eiYMjepjDeizqIb8ydd_kM9-5GZHKF4A3gGb1NWBeN_vAu_AH3GyWkYExQsEZ5G5LsXbFRIiAmUGrS8QMihXZ0FbdKt4TG2tcmjRFFTKzCs9hoKQkOodpBBSGx9j2LA80SENxRmxPRMPUqZ_SSXz7Y7aG5Zk-JbvY6bB5cxc4KYERAzKkbnQ1B50x2UGtY_0QO1xvz3uD7qW1bF64-trq0Wfqd0ftTuj3mA4tAa97mDY7Y3OLfpSfrTTHlvDFoUY96wW1c9U_lPnP46sGoE)
 
 
 
