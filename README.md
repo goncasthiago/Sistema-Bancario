@@ -1,4 +1,4 @@
-🏦 Sistema Bancário em Python (CLI) — Versão Estruturada com Decoradores, Geradores e Iteradores
+## 🏦 Sistema Bancário em Python (CLI) — Versão Estruturada com Decoradores, Geradores e Iteradores
 
 Este projeto implementa um Sistema Bancário completo via linha de comando, utilizando Python e boas práticas de organização de código.
 A versão atual conta com:
@@ -18,8 +18,8 @@ Ele serve para estudo de Python intermediário/avançado, boas práticas estrutu
 
 
 
-📌 Funcionalidades Principais (Versão Técnica)
-🧩 Arquitetura Modular
+## 📌 Funcionalidades Principais (Versão Técnica)
+### 🧩 Arquitetura Modular
 
 Separação do sistema em múltiplos módulos independentes (```historico.py```, ```conta_iterador.py```, ```decoradores.py```, etc.).
 
@@ -31,13 +31,13 @@ Cada módulo encapsula uma responsabilidade única:
 
 - Decorador de auditoria acoplado a funções críticas
 
-👤 Gerenciamento de Usuários
+### 👤 Gerenciamento de Usuários
 
 Estrutura de dados baseada em ```dict```, usando o CPF como chave hash primária.
 
 Implementação de CRUD básico para usuários, mantendo isolamento entre camadas.
 
-🏦 Administração de Contas Correntes
+### 🏦 Administração de Contas Correntes
 
 Associação entre usuários e múltiplas contas (mapeamento 1:N).
 
@@ -51,7 +51,7 @@ Flatten de contas para iteração linear
 
 Entrega de dados formatados para inspeção ou exportação
 
-💰 Operações Bancárias
+### 💰 Operações Bancárias
 
 - Fluxo de transações estruturado com:
 
@@ -71,7 +71,7 @@ número máximo de operações
 
 validação de saldo
 
-📜 Histórico de Transações (Gerador)
+### 📜 Histórico de Transações (Gerador)
 
 Histórico baseado em **generator function**, permitindo:
 
@@ -83,7 +83,7 @@ filtros dinâmicos de tipos de operação (saque, deposito)
 
 Adequado para extração de relatórios extensos sem custo adicional de alocação.
 
-🧾 Auditoria via Decoradores (Log Automático)
+### 🧾 Auditoria via Decoradores (Log Automático)
 
 Decorador **log_transação** aplicado a funções sensíveis:
 
@@ -92,7 +92,7 @@ registra timestamp, método, argumentos e contexto operacional
 permite extensão futura para persistência em arquivo, S3 ou banco de dados
 
 
-🔑 Gerenciamento de Autenticação e Sessão
+### 🔑 Gerenciamento de Autenticação e Sessão
 
 Sessão controlada via estrutura dedicada (sessao) contendo:
 
@@ -104,7 +104,7 @@ Sessão controlada via estrutura dedicada (sessao) contendo:
 
 - Isolamento entre contexto global e contexto da operação.
 
-🧭 CLI para Navegação
+### 🧭 CLI para Navegação
 
 Interface por menu que funciona como controlador de fluxo (controller).
 
@@ -121,7 +121,7 @@ Estrutura compatível com futura migração para frameworks (Flask/FastAPI).
 
 ## 🧱 Arquitetura do Sistema
 
-O sistema é implementado em um único arquivo, organizado em:
+O sistema é organizado em:
 
 1. Funções de Operações Bancárias
 
@@ -175,7 +175,7 @@ O sistema é implementado em um único arquivo, organizado em:
 
 O programa permanece em execução até o usuário encerrar
 
-🧾 Decorador de Log (log_decorador)
+## 🧾 Decorador de Log (log_decorador)
 
 Agora aparece como um nó independente no fluxo.
 Cada operação crítica (depósito, saque, extrato) passa por ele antes de alterar o estado da conta.

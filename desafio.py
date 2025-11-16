@@ -1,27 +1,17 @@
 import functools
-from historico import Historico
-from conta_iterador import ContaIterador
 from datetime import datetime
+import state
+from conta_iterador import ContaIterador
+from historico import Historico
+from gerador import log_transação
 
 historico = Historico()
-
-
-
-# Decorador para gerar log das funções do Banco
-def log_transação(func):
-    @functools.wraps(func)
-    def cria_log(*args, **kwargs):
-        nome_funcao = func.__name__
-        resultado = func(*args, **kwargs)
-        print(f"Função executada: {nome_funcao}, Data: {datetime.now()}")        
-        return resultado
-
-    return cria_log
-
 
 # Funções diretamente ligadas a tarefas do banco
 @log_transação
 def saque(*, conta, valor, limite_saques):
+
+    msg = ""
     
     excedeu_saldo = valor > conta['saldo']
 
@@ -30,15 +20,21 @@ def saque(*, conta, valor, limite_saques):
     excedeu_saques = conta['numero_saques'] >= limite_saques
 
     if excedeu_saldo:
-        print("Operação falhou! Você não possui saldo sufuciente.")
+        msg = "Operação falhou! Você não possui saldo sufuciente."
+        print(msg)
+        return msg
         
 
     elif excedeu_limite:
-        print("Operação falhou! O valor do saque excedeu o limite.")
+        msg = "Operação falhou! O valor do saque excedeu o limite."
+        print(msg)
+        return msg
         
 
     elif excedeu_saques:
-        print("Operação falhou! Número de saques foi excedido.")
+        msg = "Operação falhou! Número de saques foi excedido."
+        print(msg)
+        return msg
         
 
     elif valor > 0:
@@ -46,17 +42,21 @@ def saque(*, conta, valor, limite_saques):
 
         conta['extrato'] += f'Saque: R$ {valor: .2f}\n'
 
-        conta['numero_saques'] += 1       
-        
-        historico.adicionar_transacao({
+        conta['numero_saques'] += 1  
+
+        transacao ={
                 "tipo": "saque",
                 "valor": valor,
                 "data": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-            })
-
-    else: 
-        print("Operação falhou! O valor informado é inválido.")
+            }  
         
+        historico.adicionar_transacao(transacao)
+        return transacao
+    else: 
+        msg = "Operação falhou! O valor informado é inválido."
+        print(msg)
+        return msg
+
 @log_transação
 def deposito(conta, valor):
     conta = sessao_ativa()
@@ -64,14 +64,17 @@ def deposito(conta, valor):
     if valor > 0:
         conta['saldo'] += valor
         conta['extrato'] += f'Deposito: R$ {valor: .2f}\n'
-        historico.adicionar_transacao({
+        transacao = {
                 "tipo": "deposito",
                 "valor": valor,
                 "data": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
-            })
+            }
+        historico.adicionar_transacao(transacao)
         print(f"Depósito de {valor} efetuado com sucesso!")
+        return transacao
     else:
         print("Operação falhou! O valor informado é inválido. Tente novamente!")
+        return "Operação falhou! O valor informado é inválido. Tente novamente!"
         
 @log_transação
 def extrato_conta(conta):
@@ -83,9 +86,11 @@ def extrato_conta(conta):
     print(f"\nSaldo: R$ {conta['saldo']: .2f}")
     print("#################################")      
 
-    
+    transacoes = []
     for transacao in historico.gerar_relatorio(tipo_transacao="saque"):
-        print(transacao)
+        transacoes.append(transacao)
+        
+    return transacoes
     
 
 
@@ -96,11 +101,14 @@ def criar_usuario(nome, data_nascimento, cpf, endereco):
         usuarios[cpf] = {
             "nome": nome,
             "data_nascimento": data_nascimento,
-            "endereco": endereco,
-            
+            "endereco": endereco,            
         }
+        return usuarios[cpf]
+        
     else:
-        print("Já existe um usuário com esse CPF!")  
+        msg = "Já existe um usuário com esse CPF!"
+        print(msg)
+        return msg  
         
 @log_transação
 def criar_conta_corrente(agencia, numero_conta, usuario):
@@ -116,6 +124,8 @@ def criar_conta_corrente(agencia, numero_conta, usuario):
                     "limite": 500,
                     "numero_saques": 0
                 }
+        
+        return conta_corrente[usuario][numero_conta]
 
 
 # Funções administrativas para que todo código funcione corretamente
@@ -152,7 +162,7 @@ def listar_contas():
 
 def sessao_ativa():
     """Retorna a conta corrente do usuário logado"""
-    return conta_corrente[sessao['cpf']][sessao['conta_corrente']]
+    return conta_corrente[state.sessao['cpf']][state.sessao['conta_corrente']]
 
 def mensagem_controle():
     input("\n\nPressione [Enter] para continuar...")
@@ -203,11 +213,7 @@ menu = """
 # Variaveis Globais 
 LIMITE_SAQUES = 2
 
-sessao = {
-    'logado' : False,
-    'cpf': "",
-    'conta_corrente': ""
-}
+
 
 usuarios = {
     "11111111111": {
@@ -253,7 +259,7 @@ conta_corrente ={
 
 
 while True:
-    if not sessao['logado']:
+    if not state.sessao['logado']:
             
         opcao = input(login)
         if opcao == "c":
@@ -293,7 +299,7 @@ while True:
 
             # Iniciar a Sessao do cliente
             if cpf in conta_corrente and numero_conta in conta_corrente[cpf]:
-                sessao = {
+                state.sessao = {
                     'logado' : True,
                     'cpf': cpf,
                     'conta_corrente': numero_conta
@@ -359,7 +365,7 @@ while True:
         elif opcao =="q":
 
             # Apaga a sessao do cliente
-            sessao = {
+            state.sessao = {
             'logado' : False,
             'cpf': "",
             'conta_corrente': ""

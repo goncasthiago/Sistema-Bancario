@@ -1,0 +1,4 @@
+Data,Cliente,Função,Argumentos,Retorno
+2025-11-16 12:52:56.221150,"{'logado': False, 'cpf': '', 'conta_corrente': ''}",deposito,100.0,"{'tipo': 'deposito', 'valor': 100.0, 'data': '16-11-2025 12:52:56'}"
+2025-11-16 12:57:37.927041,"{'logado': True, 'cpf': '11111111112', 'conta_corrente': '123458-7'}",deposito,100.0,"{'tipo': 'deposito', 'valor': 100.0, 'data': '16-11-2025 12:57:37'}"
+2025-11-16 12:58:00.183172,"{'logado': True, 'cpf': '11111111112', 'conta_corrente': '123458-7'}",saque,10.0,"{'tipo': 'saque', 'valor': 10.0, 'data': '16-11-2025 12:58:00'}"
