@@ -1,3 +1,26 @@
+import functools
+from historico import Historico
+from conta_iterador import ContaIterador
+from datetime import datetime
+
+historico = Historico()
+
+
+
+# Decorador para gerar log das funções do Banco
+def log_transação(func):
+    @functools.wraps(func)
+    def cria_log(*args, **kwargs):
+        nome_funcao = func.__name__
+        resultado = func(*args, **kwargs)
+        print(f"Função executada: {nome_funcao}, Data: {datetime.now()}")        
+        return resultado
+
+    return cria_log
+
+
+# Funções diretamente ligadas a tarefas do banco
+@log_transação
 def saque(*, conta, valor, limite_saques):
     
     excedeu_saldo = valor > conta['saldo']
@@ -23,32 +46,51 @@ def saque(*, conta, valor, limite_saques):
 
         conta['extrato'] += f'Saque: R$ {valor: .2f}\n'
 
-        conta['numero_saques'] += 1
+        conta['numero_saques'] += 1       
+        
+        historico.adicionar_transacao({
+                "tipo": "saque",
+                "valor": valor,
+                "data": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            })
 
     else: 
         print("Operação falhou! O valor informado é inválido.")
         
-
+@log_transação
 def deposito(conta, valor):
     conta = sessao_ativa()
             
     if valor > 0:
         conta['saldo'] += valor
         conta['extrato'] += f'Deposito: R$ {valor: .2f}\n'
+        historico.adicionar_transacao({
+                "tipo": "deposito",
+                "valor": valor,
+                "data": datetime.now().strftime("%d-%m-%Y %H:%M:%S"),
+            })
         print(f"Depósito de {valor} efetuado com sucesso!")
     else:
         print("Operação falhou! O valor informado é inválido. Tente novamente!")
         
-
+@log_transação
 def extrato_conta(conta):
+
 
     
     print("\n#############EXTRATO#############")
     print("Não foram realizadas movimentações." if not conta['extrato'] else conta['extrato'])
     print(f"\nSaldo: R$ {conta['saldo']: .2f}")
     print("#################################")      
+
+    
+    for transacao in historico.gerar_relatorio(tipo_transacao="saque"):
+        print(transacao)
     
 
+
+    
+@log_transação
 def criar_usuario(nome, data_nascimento, cpf, endereco):
     if cpf not in usuarios:
         usuarios[cpf] = {
@@ -60,7 +102,7 @@ def criar_usuario(nome, data_nascimento, cpf, endereco):
     else:
         print("Já existe um usuário com esse CPF!")  
         
-
+@log_transação
 def criar_conta_corrente(agencia, numero_conta, usuario):
     if usuario in usuarios:
         # Garante que o usuario exista em conta corrente
@@ -74,6 +116,16 @@ def criar_conta_corrente(agencia, numero_conta, usuario):
                     "limite": 500,
                     "numero_saques": 0
                 }
+
+
+# Funções administrativas para que todo código funcione corretamente
+
+
+
+def gerador_relatorios(extrato: str):
+    for linha in extrato:
+        yield linha
+
 
 def proximo_numero_disponivel():
     """Retorna o proximo numero disponível para Conta Corrente"""
@@ -89,8 +141,15 @@ def proximo_numero_disponivel():
     numero_conta = str(max(contas) + 1).zfill(6) + "-" + '1'
     return numero_conta
 
+    
+def listar_contas():
+    """Retorna uma lista com todas as contas corrente cadastradas no Banco"""
+    
+    for conta in ContaIterador(conta_corrente):
+        print(conta)
+    
 
-                
+
 def sessao_ativa():
     """Retorna a conta corrente do usuário logado"""
     return conta_corrente[sessao['cpf']][sessao['conta_corrente']]
@@ -110,6 +169,7 @@ login = """
 ##      [e] Entrar              ##
 ##      [c] Criar Usuario       ##
 ##      [ac] Abrir Conta        ##
+##      [lc] Listar Contas      ##
 ##      [q] Sair                ##
 ##                              ##
 ##                              ##
@@ -154,12 +214,34 @@ usuarios = {
         "nome": "João Silva",
         "data_nascimento": "10/01/1990",
         "endereco": "Rua A, 123 - Cidade X"
+    },
+    "11111111112": {
+        "nome": "Maria Silva",
+        "data_nascimento": "11/01/1990",
+        "endereco": "Rua A, 123 - Cidade X"
     }
 } 
 
 conta_corrente ={
             "11111111111": {
+                "123457-7": {
+                    "agencia": "0001",
+                    "saldo": 0,
+                    "extrato": "",
+                    "limite": 500,
+                    "numero_saques": 0
+                },
                 "123456-7": {
+                    "agencia": "0001",
+                    "saldo": 0,
+                    "extrato": "",
+                    "limite": 500,
+                    "numero_saques": 0
+                }
+            },
+            
+            "11111111112": {
+                "123458-7": {
                     "agencia": "0001",
                     "saldo": 0,
                     "extrato": "",
@@ -168,6 +250,7 @@ conta_corrente ={
                 }
             }
         }
+
 
 while True:
     if not sessao['logado']:
@@ -199,6 +282,7 @@ while True:
                 print(f"Agência: {conta_corrente[usuario][numero_conta]['agencia']}")
                 print(f"Número da Conta: {numero_conta}")
                 mensagem_controle()
+
             else:
                 print("Usuário não encontrado, por favor crie um usuário antes de abrir uma conta.")
                 mensagem_controle()
@@ -218,6 +302,10 @@ while True:
             else:
                 print("\n\nNão encontramos seu cadastro!\n\n")
                 mensagem_controle()
+        
+        elif opcao == 'lc' :
+            listar_contas();
+        
         elif opcao =="q":
             break
         else:
